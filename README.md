@@ -3,11 +3,11 @@
     <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter"
       alt="Platform" />
   </a>
-  <a href="https://pub.dartlang.org/packages/multi_border">
+  <a href="https://pub.dartlang.org/packages/animated_flight_paths">
     <img src="https://img.shields.io/pub/v/animated_flight_paths" alt="Animated Flight Paths Pub Package" />
   </a>
   <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/github/license/benjamin-otto/animated_flight_paths" alt="MIT License"/>
+    <img src="https://img.shields.io/github/license/benjamin-otto/animated_flight_paths" alt="License"/>
   </a>
 </p>
 
