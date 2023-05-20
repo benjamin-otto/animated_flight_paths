@@ -1,8 +1,8 @@
 name: animated_flight_paths
-description: A package for adding flight path animations over the built-in world
-  map widgets or any custom widget.
+description: A package for adding flight path animations to a map or custom background.
 version: 0.0.1
-# homepage: null
+homepage: https://github.com/benjamin-otto/animated_flight_paths
+
 environment:
   sdk: ">=3.0.1 <4.0.0"
   flutter: ">=1.17.0"
