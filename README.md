@@ -111,13 +111,13 @@ final flights = <Flight>[
 ```
 
 <p>  
-    <img src="https://github.com/benjamin-otto/animated_flight_paths/blob/main/screenshots/screenshots/animated_flight_paths.gif?raw=true" alt="Animated Flight Paths" width="100%"/>
+    <img src="https://github.com/benjamin-otto/animated_flight_paths/blob/main/screenshots/animated_flight_paths.gif?raw=true" alt="Animated Flight Paths" width="100%"/>
 </p>
 
 ## Determining Flight Endpoint Offsets
 
 <p>  
-    <img src="https://github.com/benjamin-otto/animated_flight_paths/blob/main/screenshots/screenshots/map_coordinates.png?raw=true" alt="Map Coordinates" width="100%"/>
+    <img src="https://github.com/benjamin-otto/animated_flight_paths/blob/main/screenshots/map_coordinates.png?raw=true" alt="Map Coordinates" width="100%"/>
 </p>
 
 Easily determine coordinates with `debugShowOffsetOnTap`.
