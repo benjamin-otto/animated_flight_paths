@@ -7,10 +7,9 @@
     <img src="https://img.shields.io/pub/v/animated_flight_paths" alt="Animated Flight Paths Pub Package" />
   </a>
   <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/github/license/benjamin-otto/animated_flight_paths" alt="License"/>
+    <img src="https://img.shields.io/github/license/benjamin-otto/animated_flight_paths?label=license" alt="License"/>
   </a>
 </p>
-
 
 <p>  
     <img src="https://github.com/benjamin-otto/animated_flight_paths/blob/main/screenshots/animated_flight_paths.png?raw=true" alt="Animated Flight Paths" width="100%"/>
