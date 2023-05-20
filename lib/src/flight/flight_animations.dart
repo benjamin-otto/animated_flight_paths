@@ -34,14 +34,16 @@ class FlightAnimations {
         curve: options.fromEndpointCurve,
       ),
     );
-    final fromClearAnim = CurvedAnimation(
-      parent: controller,
-      curve: Interval(
-        intervalMidpoint,
-        intervalMidpoint + endpointLength,
-        curve: options.fromEndpointCurve,
-      ),
-    );
+    final fromClearAnim = options.keepFlightPathsVisible
+        ? ConstantTween<double>(0).animate(controller)
+        : CurvedAnimation(
+            parent: controller,
+            curve: Interval(
+              intervalMidpoint,
+              intervalMidpoint + endpointLength,
+              curve: options.fromEndpointCurve,
+            ),
+          );
     final pathStartAnim = options.keepFlightPathsVisible
         ? ConstantTween<double>(0).animate(controller)
         : CurvedAnimation(
@@ -68,14 +70,16 @@ class FlightAnimations {
         curve: options.fromEndpointCurve,
       ),
     );
-    final toClearAnim = CurvedAnimation(
-      parent: controller,
-      curve: Interval(
-        intervalEnd - endpointLength,
-        intervalEnd,
-        curve: options.fromEndpointCurve,
-      ),
-    );
+    final toClearAnim = options.keepFlightPathsVisible
+        ? ConstantTween<double>(0).animate(controller)
+        : CurvedAnimation(
+            parent: controller,
+            curve: Interval(
+              intervalEnd - endpointLength,
+              intervalEnd,
+              curve: options.fromEndpointCurve,
+            ),
+          );
 
     return FlightAnimations(
       fromDrawAnim: fromDrawAnim,
