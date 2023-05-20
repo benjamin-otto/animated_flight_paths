@@ -1,0 +1,24 @@
+name: animated_flight_paths
+description: A package for adding flight path animations over the built-in world
+  map widgets or any custom widget.
+version: 0.0.1
+# homepage: null
+environment:
+  sdk: ">=3.0.1 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  collection: ^1.17.0
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.4
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/mercator/
+    - assets/robinson/
