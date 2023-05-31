@@ -21,10 +21,10 @@ A widget for adding animated flight paths to a map.
 
 ## Features
 
-- Includes both Mercator and Robinson world map projections.
+- Includes Mercator and Robinson world map projections.
   - Or set any custom map or other background you choose.
-- Many options for customizing the flight paths including colors and animation curves.
-- Easily determine a point on the map using the `debugShowOffsetOnTap` and tapping or clicking.
+- Several options for customizing the flight paths including colors and animation curves.
+- Easily determine a point on the map using the `debugShowOffsetOnTap` then tapping or clicking.
 
 ## Quick Start
 
