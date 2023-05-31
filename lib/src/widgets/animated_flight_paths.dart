@@ -53,18 +53,18 @@ class AnimatedFlightPaths extends StatefulWidget {
 
 class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
     with WidgetsBindingObserver {
-  final customPaintKey = GlobalKey();
-  final keyboardListenerFocusNode = FocusNode();
-  late List<FlightComposition> flightCompositions;
-  Offset? dotOffset;
-  Size? customPaintSize;
+  late List<FlightComposition> _flightCompositions;
+  final _keyboardListenerFocusNode = FocusNode();
+  final _customPaintKey = GlobalKey();
+  Size? _customPaintSize;
+  Offset? _dotOffset;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initCustomPaintSize();
     _createFlightCompositions();
-    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -78,31 +78,35 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
         children: [
           _flightPathsCustomPaint,
           if (widget.options.showLabels) _labelsLayout,
-          if (widget.debugShowOffsetOnTap && dotOffset != null) ...[
+          if (widget.debugShowOffsetOnTap && _dotOffset != null) ...[
             _tapPositionDot,
             _tapPositionText,
           ],
         ],
       );
 
-  Widget get _flightPathsStackWithInputListeners => KeyboardListener(
-        focusNode: keyboardListenerFocusNode,
-        onKeyEvent: _onKey,
-        child: GestureDetector(
-          onTapUp: (details) {
-            if (widget.debugShowOffsetOnTap) {
-              setState(() => dotOffset = details.localPosition);
-            }
-          },
-          child: _flightPathsStack,
+  Widget get _flightPathsStackWithInputListeners => GestureDetector(
+        onTapUp: (details) {
+          if (!widget.debugShowOffsetOnTap) return;
+          if (!_keyboardListenerFocusNode.hasFocus) {
+            _keyboardListenerFocusNode.requestFocus();
+          }
+          setState(() => _dotOffset = details.localPosition);
+        },
+        child: FocusScope(
+          child: KeyboardListener(
+            focusNode: _keyboardListenerFocusNode,
+            onKeyEvent: _onKey,
+            child: _flightPathsStack,
+          ),
         ),
       );
 
   Widget get _flightPathsCustomPaint => ClipRect(
         child: CustomPaint(
-          key: customPaintKey,
+          key: _customPaintKey,
           foregroundPainter: FlightPathsPainter(
-            flightCompositions: flightCompositions,
+            flightCompositions: _flightCompositions,
             options: widget.options,
             controller: widget.controller,
           ),
@@ -111,10 +115,10 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
       );
 
   Widget get _labelsLayout => SizedBox(
-        width: customPaintSize != null ? customPaintSize!.width : 0,
-        height: customPaintSize != null ? customPaintSize!.height : 0,
+        width: _customPaintSize != null ? _customPaintSize!.width : 0,
+        height: _customPaintSize != null ? _customPaintSize!.height : 0,
         child: LabelsLayout(
-          flightComps: flightCompositions,
+          flightComps: _flightCompositions,
           options: widget.options,
           controller: widget.controller,
         ),
@@ -123,8 +127,8 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
   Widget get _tapPositionDot {
     const diameter = 8.0;
     return Positioned(
-      top: dotOffset!.dy - (diameter / 2),
-      left: dotOffset!.dx - (diameter / 2),
+      top: _dotOffset!.dy - (diameter / 2),
+      left: _dotOffset!.dx - (diameter / 2),
       child: Container(
         width: diameter,
         height: diameter,
@@ -137,18 +141,18 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
   }
 
   Widget get _tapPositionText {
-    if (customPaintSize == null) return const SizedBox();
+    if (_customPaintSize == null) return const SizedBox();
     const width = 150.0;
     const height = 50.0;
-    final x = (dotOffset!.dx / customPaintSize!.width) * 100;
-    final y = (dotOffset!.dy / customPaintSize!.height) * 100;
+    final x = (_dotOffset!.dx / _customPaintSize!.width) * 100;
+    final y = (_dotOffset!.dy / _customPaintSize!.height) * 100;
     return Positioned(
-      top: (dotOffset!.dy > customPaintSize!.height / 2)
-          ? dotOffset!.dy - height
-          : dotOffset!.dy,
-      left: (dotOffset!.dx > customPaintSize!.width / 2)
-          ? dotOffset!.dx - width
-          : dotOffset!.dx,
+      top: (_dotOffset!.dy > _customPaintSize!.height / 2)
+          ? _dotOffset!.dy - height
+          : _dotOffset!.dy,
+      left: (_dotOffset!.dx > _customPaintSize!.width / 2)
+          ? _dotOffset!.dx - width
+          : _dotOffset!.dx,
       child: Container(
         width: width,
         height: height,
@@ -167,7 +171,7 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
   }
 
   void _createFlightCompositions() {
-    flightCompositions = widget.flightSchedule.flights.foldIndexed(
+    _flightCompositions = widget.flightSchedule.flights.foldIndexed(
       <FlightComposition>[],
       (flightIndex, flightCompositions, flight) {
         final flightAnimations = FlightAnimations.fromFlightSchedule(
@@ -189,25 +193,27 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
         'Arrow Down' => _incrementDotOffset(const Offset(0, 1)),
         'Arrow Left' => _incrementDotOffset(const Offset(-1, 0)),
         'Arrow Right' => _incrementDotOffset(const Offset(1, 0)),
-        _ => false
+        _ => {}
       };
     }
   }
 
   void _incrementDotOffset(Offset increment) {
-    if (dotOffset == null) return;
+    if (_dotOffset == null) return;
     setState(() {
-      dotOffset = (dotOffset! + increment).clampToSize(customPaintSize!);
+      _dotOffset = (_dotOffset! + increment).clampToSize(_customPaintSize!);
     });
   }
 
   void _initCustomPaintSize() {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => setState(() {
-        customPaintSize = customPaintKey.currentContext?.size;
-        dotOffset = null;
-      }),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _customPaintSize = _customPaintKey.currentContext?.size;
+          _dotOffset = null;
+        });
+      }
+    });
   }
 
   @override
