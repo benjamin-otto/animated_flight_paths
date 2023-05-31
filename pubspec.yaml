@@ -1,6 +1,6 @@
 name: animated_flight_paths
 description: A package for adding flight path animations to a map or custom background.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/benjamin-otto/animated_flight_paths
 
 environment:
