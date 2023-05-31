@@ -74,10 +74,10 @@ class LabelsLayout extends StatelessWidget {
     for (final flightComp in flightComps) {
       final FlightComposition(:flight, :animations) = flightComp;
       final Flight(:from, :to) = flight;
-      drawAnimations[from] ??= {}..add(animations.fromDrawAnim);
-      drawAnimations[to] ??= {}..add(animations.toDrawAnim);
-      clearAnimations[from] ??= {}..add(animations.fromClearAnim);
-      clearAnimations[to] ??= {}..add(animations.toClearAnim);
+      (drawAnimations[from] ??= {}).add(animations.fromDrawAnim);
+      (drawAnimations[to] ??= {}).add(animations.toDrawAnim);
+      (clearAnimations[from] ??= {}).add(animations.fromClearAnim);
+      (clearAnimations[to] ??= {}).add(animations.toClearAnim);
       allEndpoints.addAll([from, to]);
     }
 
@@ -108,10 +108,8 @@ class _LabelsLayoutDelegate extends MultiChildLayoutDelegate {
 
   @override
   void performLayout(Size size) {
-    for (final MapEntry(
-          key: endpoint,
-          value: labelPosition,
-        ) in endpointLabelPositions.entries) {
+    for (final MapEntry(key: endpoint, value: labelPosition)
+        in endpointLabelPositions.entries) {
       _layoutLabel(endpoint, labelPosition, size);
     }
   }
