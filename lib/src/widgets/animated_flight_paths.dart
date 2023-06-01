@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../extensions.dart';
 import '../flight/flight.dart';
 import '../flight/flight_animations.dart';
 import '../flight/flight_composition.dart';
@@ -55,15 +54,12 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
     with WidgetsBindingObserver {
   late List<FlightComposition> _flightCompositions;
   final _keyboardListenerFocusNode = FocusNode();
-  final _customPaintKey = GlobalKey();
-  Size? _customPaintSize;
   Offset? _dotOffset;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initCustomPaintSize();
     _createFlightCompositions();
   }
 
@@ -104,7 +100,6 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
 
   Widget get _flightPathsCustomPaint => ClipRect(
         child: CustomPaint(
-          key: _customPaintKey,
           foregroundPainter: FlightPathsPainter(
             flightCompositions: _flightCompositions,
             options: widget.options,
@@ -114,9 +109,7 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
         ),
       );
 
-  Widget get _labelsLayout => SizedBox(
-        width: _customPaintSize != null ? _customPaintSize!.width : 0,
-        height: _customPaintSize != null ? _customPaintSize!.height : 0,
+  Widget get _labelsLayout => Positioned.fill(
         child: LabelsLayout(
           flightComps: _flightCompositions,
           options: widget.options,
@@ -141,31 +134,40 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
   }
 
   Widget get _tapPositionText {
-    if (_customPaintSize == null) return const SizedBox();
-    const width = 150.0;
-    const height = 50.0;
-    final x = (_dotOffset!.dx / _customPaintSize!.width) * 100;
-    final y = (_dotOffset!.dy / _customPaintSize!.height) * 100;
-    return Positioned(
-      top: (_dotOffset!.dy > _customPaintSize!.height / 2)
-          ? _dotOffset!.dy - height
-          : _dotOffset!.dy,
-      left: (_dotOffset!.dx > _customPaintSize!.width / 2)
-          ? _dotOffset!.dx - width
-          : _dotOffset!.dx,
-      child: Container(
-        width: width,
-        height: height,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade800,
-          border: Border.all(width: 2),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          '(${x.toStringAsFixed(2)}, ${y.toStringAsFixed(2)})',
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-        ),
+    return Positioned.fill(
+      child: LayoutBuilder(
+        builder: (_, constraints) {
+          const width = 150.0;
+          const height = 50.0;
+          final x = (_dotOffset!.dx / constraints.maxWidth) * 100;
+          final y = (_dotOffset!.dy / constraints.maxHeight) * 100;
+          final dx = _dotOffset!.dx > constraints.maxWidth / 2
+              ? _dotOffset!.dx - width
+              : _dotOffset!.dx;
+          final dy = _dotOffset!.dy > constraints.maxHeight / 2
+              ? _dotOffset!.dy - height
+              : _dotOffset!.dy;
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Transform.translate(
+              offset: Offset(dx, dy),
+              child: Container(
+                width: width,
+                height: height,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade800,
+                  border: Border.all(width: 2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  '(${x.toStringAsFixed(2)}, ${y.toStringAsFixed(2)})',
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -199,31 +201,24 @@ class _AnimatedFlightPathsState extends State<AnimatedFlightPaths>
   }
 
   void _incrementDotOffset(Offset increment) {
-    if (_dotOffset == null) return;
-    setState(() {
-      _dotOffset = (_dotOffset! + increment).clampToSize(_customPaintSize!);
-    });
+    if (_dotOffset != null) {
+      setState(() => _dotOffset = _dotOffset! + increment);
+    }
   }
 
-  void _initCustomPaintSize() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _customPaintSize = _customPaintKey.currentContext?.size;
-          _dotOffset = null;
-        });
-      }
-    });
+  void _resetDotOffset() {
+    if (mounted && _dotOffset != null) {
+      setState(() => _dotOffset = null);
+    }
   }
 
   @override
-  void didChangeMetrics() => _initCustomPaintSize();
+  void didChangeMetrics() => _resetDotOffset();
 
   @override
   void didUpdateWidget(AnimatedFlightPaths oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.options != oldWidget.options) _createFlightCompositions();
-    _initCustomPaintSize();
   }
 
   @override
